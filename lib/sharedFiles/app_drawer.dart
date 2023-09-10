@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ninjain/sharedFiles/profile_header.dart';
 
-// import '../main.dart';
-
 class AppDrawer extends StatelessWidget {
-  // final List<ListItem> items;
-  final List<String> items;
+  final List<String> drawerItems;
   final int selectedIndex;
   final Function(int) onItemTapped;
 
   const AppDrawer({
     Key? key,
-    required this.items,
+    required this.drawerItems,
     required this.selectedIndex,
     required this.onItemTapped,
   }) : super(key: key);
@@ -34,9 +31,9 @@ class AppDrawer extends StatelessWidget {
           ),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: items.length,
+            itemCount: drawerItems.length,
             itemBuilder: (context, index) {
-              final item = items[index];
+              final item = drawerItems[index];
 
               return ListTile(
                 title: Text(item),
