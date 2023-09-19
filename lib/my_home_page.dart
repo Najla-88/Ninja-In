@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:ninjain/circule_products.dart';
-import 'package:ninjain/theme.dart';
+import 'package:ninjain/grid_items.dart';
+import 'package:ninjain/virt_and_horiz.dart';
+// import 'package:ninjain/theme.dart';
 import '../slider.dart';
 import 'app_drawer.dart';
+import 'bottom_bar.dart';
+import 'horiz_products.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
+  // final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -17,17 +21,18 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<String> items = ['Home', 'page1', 'page2'];
   final List<String> tabs = ['tab1', 'tab2', 'tab3', 'tab4'];
 
+  int _currentIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  void _onThemeChanged(bool isDark) {
-    MyThemes.isDark = isDark;
-    setState(() {});
-    print('_onThemeChanged');
-  }
+  // void _onThemeChanged(bool isDark) {
+  //   MyThemes.isDark = isDark;
+  //   setState(() {});
+  //   print('_onThemeChanged');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.title,
+            'Ninja-In',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
@@ -70,42 +75,32 @@ class _MyHomePageState extends State<MyHomePage> {
         body: TabBarView(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 15),
               child: ListView(
                 children: [
                   MySlider(sliderItems: items),
-                  CirculeProducts(),
+                  HorizProducts(5),
+                  // VertAndHoriz(),
+                  CirculeProducts(3),
+                  GridItems(5),
                 ],
               ),
             ),
-            const Column(
+            Column(
               children: [
-                ListTile(
-                  tileColor: Colors.amber,
-                  title: Text(
-                    'Neejo Dattebayo',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'neejo-ninja@example.com',
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
+                HorizProducts(10),
               ],
             ),
-            ListView(
-              children: [
-                CirculeProducts(),
-              ],
-            ),
-            const Text('data4'),
+            VertAndHoriz(Vitems: 3, Hitems: 5),
+            // ListView(
+            //   children: [
+            //     CirculeProducts(10),
+            //   ],
+            // ),
+            GridItems(10),
           ],
         ),
+        bottomNavigationBar: AppBottomNavBar(),
       ),
     );
   }

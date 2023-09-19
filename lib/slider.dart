@@ -11,7 +11,7 @@ class MySlider extends StatelessWidget {
     return CarouselSlider(
       options: CarouselOptions(
         height: screenHeight * 0.25,
-        enlargeCenterPage: true,
+        // enlargeCenterPage: true,
         initialPage: 2,
         autoPlay: true,
       ),

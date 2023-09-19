@@ -17,6 +17,27 @@ class MyThemes {
       labelColor: Colors.white,
       // indicatorColor: Colors.white,// doesnt work -_-
     ),
+
+    // inputDecorationTheme: InputDecorationTheme(
+    //   focusedBorder: OutlineInputBorder(
+    //     borderSide: const BorderSide(
+    //       color: Colors.black87,
+    //     ),
+    //     borderRadius: BorderRadius.circular(50),
+    //   ),
+    //   border: OutlineInputBorder(
+    //     borderSide: BorderSide(
+    //       color: Colors.black87,
+    //     ),
+    //     borderRadius: BorderRadius.circular(50),
+    //   ),
+    //   errorBorder: OutlineInputBorder(
+    //     borderSide: BorderSide(
+    //       color: Colors.redAccent,
+    //     ),
+    //     borderRadius: BorderRadius.circular(50),
+    //   ),
+    // ),
   );
 
   static final darkTheme = ThemeData(
