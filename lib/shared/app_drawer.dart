@@ -1,16 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../user_data.dart';
+import '../providers/user_data.dart';
 
 // ignore: must_be_immutable
 class AppDrawer extends StatefulWidget {
-  final List<List> drawerItems = const [
-    [Text('Shop'), Icon(Icons.shopify), '/'],
-    // [Text('Categories'), Icon(Icons.category), '/categories'],
-    [Text('Cart'), Icon(Icons.shopping_cart_outlined), '/cartList'],
-    [Text('Setting'), Icon(Icons.settings), '/setting'],
-  ];
   final String title;
   AppDrawer({
     Key? key,
@@ -23,12 +19,6 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   int _selectedIndex = 0;
-
-  // void _onItemTapped(int index) {
-  //   setState(() {
-  //     _selectedIndex = index;
-  //   });
-  // }
   @override
   void initState() {
     super.initState();
@@ -48,56 +38,73 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context);
-
+    List<List> drawerItems = userData.user.name != null
+        ? [
+            [Text('Shop'), Icon(Icons.shopify), '/'],
+            [Text('Cart'), Icon(Icons.shopping_cart_outlined), '/cartList'],
+            [Text('Setting'), Icon(Icons.settings), '/setting'],
+          ]
+        : [
+            [Text('Shop'), Icon(Icons.shopify), '/'],
+          ];
+    Uint8List? userpicData = userData.user.img;
     return Drawer(
       child: ListView(
         children: [
-          if (userData.username != '' && userData.uemail != '')
+          if (userData.user.name != null && userData.user.email != null)
             SizedBox(
               height: 200,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Theme.of(context).primaryColor,
+              child: GestureDetector(
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CircleAvatar(
-                      radius: 40,
-                      backgroundImage:
-                          AssetImage('assets/images/product_image.png'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage:
+                            userpicData != null && userpicData.isNotEmpty
+                                ? MemoryImage(userpicData)
+                                : AssetImage('assets/images/product_image.png')
+                                    as ImageProvider<Object>?,
                       ),
-                      child: Text(
-                        userData.username,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
+                        ),
+                        child: Text(
+                          userData.user.name!,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                        // vertical: 5.0,
-                      ),
-                      child: Text(
-                        userData.uemail,
-                        style: const TextStyle(
-                          fontSize: 14,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
+                          // vertical: 5.0,
+                        ),
+                        child: Text(
+                          userData.user.email!,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                onTap: () {
+                  Navigator.of(context).pushNamed('/userInfo');
+                },
               ),
             )
           else
@@ -136,18 +143,16 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: widget.drawerItems.length,
+            itemCount: drawerItems.length,
             itemBuilder: (context, index) {
-              final item = widget.drawerItems[index];
+              final item = drawerItems[index];
 
               return ListTile(
                 title: item[0],
                 trailing: item[1],
                 selected: _selectedIndex == index,
-                onTap: () {
-                  // _onItemTapped(index);
+                onTap: () async {
                   Navigator.of(context).pushNamed(item[2]);
-                  // Navigator.pop(context);
                 },
               );
             },

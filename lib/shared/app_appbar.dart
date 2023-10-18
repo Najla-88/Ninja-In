@@ -1,3 +1,4 @@
+import '../models/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +8,8 @@ AppBar AppAppbar(
   BuildContext context,
   String title, {
   List<IconButton> actions = const [],
-  List<String> tabs = const [],
+  // List<String> tabs = const [],
+  List<Category> tabs = const [],
 }) {
   return AppBar(
     title: Text(
@@ -46,7 +48,8 @@ AppBar AppAppbar(
             physics: BouncingScrollPhysics(),
             tabs: tabs
                 .map((tab) => Tab(
-                      child: Text(tab),
+                      // child: Text(tab),
+                      child: Text(tab.name ?? ''),
                     ))
                 .toList(),
           )
