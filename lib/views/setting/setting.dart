@@ -6,8 +6,6 @@ import 'package:ninjain/providers/user_data.dart';
 import 'package:ninjain/views/setting/delete_account.dart';
 import 'package:provider/provider.dart';
 
-// import 'alert_dialog.dart';
-
 class Setting extends StatefulWidget {
   const Setting({Key? key}) : super(key: key);
 
@@ -25,10 +23,10 @@ class _SettingState extends State<Setting> {
       onWillPop: () async {
         Navigator.of(context).popUntil((route) => false);
         Navigator.of(context).pushNamed('/');
-        return true; // Allow default back button behavior
+        return true;
       },
       child: Scaffold(
-        appBar: AppAppbar(context, 'Setting'),
+        appBar: const AppAppbar(title: 'Setting'),
         drawer: AppDrawer(title: 'Setting'),
         body: ListView(
           children: [
@@ -42,12 +40,12 @@ class _SettingState extends State<Setting> {
                       backgroundImage: userData.user.img != null &&
                               userData.user.img!.isNotEmpty
                           ? MemoryImage(userData.user.img!)
-                          : AssetImage('assets/images/product_image.png')
+                          : const AssetImage('assets/images/product_image.png')
                               as ImageProvider<Object>?,
                       maxRadius: MediaQuery.of(context).size.width * 0.13,
                     ),
                     Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -55,7 +53,7 @@ class _SettingState extends State<Setting> {
                             height: 30,
                             child: Text(
                               userData.user.name ?? '',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -63,7 +61,7 @@ class _SettingState extends State<Setting> {
                           ),
                           Text(
                             userData.user.email ?? '',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                             ),
                           ),
@@ -126,7 +124,7 @@ class _SettingState extends State<Setting> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('LogOut'),
+                          title: const Text('Logout'),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -161,9 +159,9 @@ class _SettingState extends State<Setting> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.delete),
+              leading: const Icon(Icons.delete),
               title: GestureDetector(
-                child: Text(
+                child: const Text(
                   'Delete account',
                   style: TextStyle(
                     fontSize: 17,
@@ -180,23 +178,23 @@ class _SettingState extends State<Setting> {
                   userData.resetObject();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
+                      content: const Text(
                         "Account deleted Succefully",
                         style: TextStyle(
                             // color: Colors.black,
                             ),
                       ),
                       backgroundColor: Colors.green[20],
-                      duration: Duration(seconds: 2),
+                      duration: const Duration(seconds: 2),
                     ),
                   );
                   Navigator.of(context).popUntil((route) => false);
                   Navigator.of(context).pushNamed('/');
                 } else if (isDeleted == 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text(
-                        "ERROR: Account Didn\'t Deleted!",
+                        "ERROR: Account Didn't Deleted!",
                         style: TextStyle(
                           color: Colors.black,
                         ),

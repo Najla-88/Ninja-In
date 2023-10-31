@@ -4,7 +4,7 @@ import 'package:ninjain/shared/app_appbar.dart';
 import 'package:ninjain/widgets/grid_items.dart';
 
 class FeaturesPage extends StatelessWidget {
-  FeaturesPage({
+  const FeaturesPage({
     super.key,
     required this.featureName,
     required this.items,
@@ -14,15 +14,15 @@ class FeaturesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppAppbar(context, 'Features'),
+      appBar: const AppAppbar(title: 'Features'),
       body: ListView(
         children: [
           Container(
-            margin: EdgeInsets.all(10),
+            margin: const EdgeInsets.all(10),
             child: Center(
               child: Text(
                 featureName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18.0,
                 ),
               ),

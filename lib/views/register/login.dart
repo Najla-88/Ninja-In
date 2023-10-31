@@ -17,8 +17,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   var formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isSubmitPressed = true;
@@ -38,10 +38,6 @@ class _LoginPageState extends State<LoginPage> {
     final user = Users();
     final userData = Provider.of<UserData>(context);
     final cartData = Provider.of<CartData>(context);
-
-    final CartRepository cartRepo = CartRepository();
-    final UserRepository userRepo = UserRepository();
-    final ProductRepository prodRepo = ProductRepository();
 
     return Scaffold(
       appBar: AppBar(
@@ -183,21 +179,22 @@ class _LoginPageState extends State<LoginPage> {
                               });
                               user.email = _emailController.text;
                               user.password = _passwordController.text;
-                              Users apiUser = await userRepo.login(user);
+                              Users apiUser =
+                                  await UserRepository().login(user);
                               if (apiUser.name != null) {
-                                List<Cart> carts =
-                                    await cartRepo.getCarts(apiUser.id!);
+                                List<Cart> carts = await CartRepository()
+                                    .getCarts(apiUser.id!);
                                 userData.setUser(apiUser);
                                 cartData.setCart(carts);
                                 for (var cart in carts) {
-                                  final Product prod =
-                                      await prodRepo.getProdById(cart.prod_id!);
+                                  final Product prod = await ProductRepository()
+                                      .getProdById(cart.prod_id!);
                                   cartData.addProd(prod);
                                 }
                                 Navigator.of(context).pushReplacementNamed('/');
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text("Invaild email or password"),
                                     backgroundColor: Colors.redAccent,
                                     duration: Duration(seconds: 2),

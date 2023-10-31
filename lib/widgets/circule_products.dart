@@ -4,12 +4,12 @@ import 'package:ninjain/repositories/product_repository.dart';
 import '../models/feature_model.dart';
 import '../views/features/features_page.dart';
 
-Widget CirculeProducts(List<Features> items) {
+Widget CirculeProducts(List<Feature> items) {
   return GridView.builder(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     itemCount: items.length,
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 4,
     ),
     itemBuilder: (BuildContext context, int index) {
@@ -17,9 +17,8 @@ Widget CirculeProducts(List<Features> items) {
         children: [
           GestureDetector(
             onTap: () async {
-              ProductRepository prodRepo = ProductRepository();
               List<Product> prods =
-                  await prodRepo.getProdByFeat(items[index].id!);
+                  await ProductRepository().getProdByFeat(items[index].id!);
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) {
@@ -32,9 +31,7 @@ Widget CirculeProducts(List<Features> items) {
               );
             },
             child: Container(
-              // width: 50, // Set the desired width for the container
               height: MediaQuery.of(context).size.width * 0.15,
-              // Set the desired height for the container
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -43,10 +40,8 @@ Widget CirculeProducts(List<Features> items) {
                 ),
               ),
               child: CircleAvatar(
-                radius: 40, // Set the desired radius for the CircleAvatar
+                radius: 40,
                 backgroundImage: MemoryImage(items[index].image!),
-                // AssetImage('assets/images/products/${items[index]}'),
-                // NetworkImage(items[index].img!),
               ),
             ),
           ),

@@ -25,9 +25,10 @@ void main() {
           create: (_) => CartData(),
         ),
       ],
+      // if you have only one provider
       // ChangeNotifierProvider(
       //   create: (context) => ThemeProvider(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
 
     // wrap the MaterialApp widget with
@@ -44,18 +45,18 @@ class MyApp extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: 'Ninja-In',
-      // theme: themeProvider.themeData,
+      // to make condition of the system mode
+      // theme: MediaQuery.of(context).platformBrightness ? darkTheme : lightTheme,
       theme: themeProvider.isDarkMode ? darkTheme : lightTheme,
-
+      initialRoute: '/',
       routes: {
         '/': (context) => const Home(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignUpPage(),
         '/cartList': (context) => const CartList(),
-        '/setting': (context) => Setting(),
-        '/userInfo': (context) => UserInfo(),
+        '/setting': (context) => const Setting(),
+        '/userInfo': (context) => const UserInfo(),
       },
-      initialRoute: '/',
     );
   }
 }

@@ -8,6 +8,8 @@ import 'package:ninjain/shared/app_appbar.dart';
 import 'package:ninjain/providers/user_data.dart';
 import 'package:provider/provider.dart';
 
+import '../../widgets/image_preview_page.dart';
+
 class UserInfo extends StatefulWidget {
   const UserInfo({Key? key}) : super(key: key);
 
@@ -22,7 +24,6 @@ class _UserInfoState extends State<UserInfo> {
   bool isLoading = false;
   bool showPasswordDialog = false;
   bool _obscurePassword = true;
-  UserRepository userRepo = UserRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +36,19 @@ class _UserInfoState extends State<UserInfo> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Save changes?'),
+                  title: const Text('Save changes?'),
                   insetPadding: const EdgeInsets.all(10),
                   content: isLoading
                       ? Visibility(
                           visible: isLoading,
-                          child: CircularProgressIndicator(),
+                          child: const CircularProgressIndicator(),
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                   actions: [
                     TextButton(
                       onPressed: () async {
-                        userData.user =
-                            await userRepo.getUserById(userData.user.id!);
+                        userData.user = await UserRepository()
+                            .getUserById(userData.user.id!);
                         userData.isUpdated = false;
                         Navigator.of(context).popUntil((route) => false);
                         Navigator.of(context).pushNamed('/setting');
@@ -64,7 +65,8 @@ class _UserInfoState extends State<UserInfo> {
                         setState(() {
                           isLoading = true;
                         });
-                        int result = await userRepo.updateUser(userData.user);
+                        int result =
+                            await UserRepository().updateUser(userData.user);
                         if (result == 1) {
                           Navigator.of(context).popUntil((route) => false);
                           Navigator.of(context).pushNamed('/setting');
@@ -87,7 +89,7 @@ class _UserInfoState extends State<UserInfo> {
         return true; // Allow default back button behavior
       },
       child: Scaffold(
-        appBar: AppAppbar(context, 'User info'),
+        appBar: const AppAppbar(title: 'User info'),
         body: ListView(
           children: [
             Padding(
@@ -95,15 +97,16 @@ class _UserInfoState extends State<UserInfo> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    child: CircleAvatar(
-                      maxRadius: MediaQuery.of(context).size.width * 0.201,
-                      backgroundColor: Theme.of(context).primaryColor,
+                  CircleAvatar(
+                    maxRadius: MediaQuery.of(context).size.width * 0.201,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: GestureDetector(
                       child: CircleAvatar(
                         backgroundImage: userData.user.img != null &&
                                 userData.user.img!.isNotEmpty
                             ? MemoryImage(userpicData!)
-                            : AssetImage('assets/images/product_image.png')
+                            : const AssetImage(
+                                    'assets/images/product_image.png')
                                 as ImageProvider<Object>?,
                         maxRadius: MediaQuery.of(context).size.width * 0.2,
                         child: SizedBox(
@@ -115,7 +118,7 @@ class _UserInfoState extends State<UserInfo> {
                               GestureDetector(
                                   child: CircleAvatar(
                                     backgroundColor: Colors.grey[300],
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.camera_alt,
                                       color: Colors.black,
                                     ),
@@ -127,6 +130,18 @@ class _UserInfoState extends State<UserInfo> {
                           ),
                         ),
                       ),
+                      onTap: () {
+                        if (userData.user.img != null &&
+                            userData.user.img!.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ImagePreviewPage(
+                                  imageData: userData.user.img!),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -162,7 +177,7 @@ class _UserInfoState extends State<UserInfo> {
                         fontSize: 18,
                       ),
                     ),
-                    trailing: Icon(
+                    trailing: const Icon(
                       Icons.edit,
                     ),
                   ),
@@ -172,14 +187,14 @@ class _UserInfoState extends State<UserInfo> {
                         builder: (BuildContext context) {
                           _nameCtrl.text = userData.user.name ?? '';
                           return AlertDialog(
-                            title: Text('Enter your name'),
+                            title: const Text('Enter your name'),
                             insetPadding: const EdgeInsets.all(10),
                             content: SizedBox(
                               width: MediaQuery.of(context).size.width,
                               child: Form(
                                 key: _formKey,
                                 child: TextFormField(
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'User name',
                                   ),
                                   maxLength: 20,
@@ -276,7 +291,7 @@ class _UserInfoState extends State<UserInfo> {
                         fontSize: 18,
                       ),
                     ),
-                    trailing: Icon(
+                    trailing: const Icon(
                       Icons.edit,
                     ),
                   ),
@@ -285,7 +300,7 @@ class _UserInfoState extends State<UserInfo> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Enter your name'),
+                            title: const Text('Enter your name'),
                             insetPadding: const EdgeInsets.all(10),
                             content: StatefulBuilder(
                               builder:
@@ -361,7 +376,7 @@ class _UserInfoState extends State<UserInfo> {
                         showDialog<void>(
                             context: context,
                             builder: (BuildContext context) {
-                              return PasswordDialog();
+                              return const PasswordDialog();
                             });
                       }
                     });
@@ -373,7 +388,7 @@ class _UserInfoState extends State<UserInfo> {
                   child: isLoading
                       ? Visibility(
                           visible: isLoading,
-                          child: CircularProgressIndicator(),
+                          child: const CircularProgressIndicator(),
                         )
                       : TextButton(
                           style: TextButton.styleFrom(
@@ -391,8 +406,8 @@ class _UserInfoState extends State<UserInfo> {
                             setState(() {
                               isLoading = true;
                             });
-                            int result =
-                                await userRepo.updateUser(userData.user);
+                            int result = await UserRepository()
+                                .updateUser(userData.user);
                             if (result == 1) {
                               Navigator.of(context).popUntil((route) => false);
                               Navigator.of(context).pushNamed('/setting');
@@ -401,7 +416,7 @@ class _UserInfoState extends State<UserInfo> {
                               isLoading = false;
                             });
                           },
-                          child: Text('Save'),
+                          child: const Text('Save'),
                         ),
                 ),
               ],

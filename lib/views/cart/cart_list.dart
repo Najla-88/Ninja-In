@@ -7,6 +7,7 @@ import 'package:ninjain/shared/app_appbar.dart';
 import 'package:provider/provider.dart';
 
 import '../../repositories/order_repository.dart';
+import '../../shared/app_drawer.dart';
 
 class CartList extends StatefulWidget {
   const CartList({super.key});
@@ -16,10 +17,9 @@ class CartList extends StatefulWidget {
 }
 
 class _CartListState extends State<CartList> {
-  CartRepository cartRepo = CartRepository();
-  OrderRepository orderRepo = OrderRepository();
   Timer? updateTimer;
   bool isUpdate = false;
+
   @override
   void dispose() {
     // Cancel the timer when the widget is disposed
@@ -27,13 +27,14 @@ class _CartListState extends State<CartList> {
     super.dispose();
   }
 
-  void startTimer(int id, int qty) {
+  void startTimer(int id, int qty, int orderId, double total) {
     // Cancel previous timer if it exists
     updateTimer?.cancel();
 
-    // Start a new timer with a duration of 5 seconds
-    updateTimer = Timer(Duration(seconds: 5), () {
-      cartRepo.updateCart(id, qty);
+    // Start a new timer with a duration of 3 seconds
+    updateTimer = Timer(const Duration(seconds: 3), () {
+      CartRepository().updateCart(id, qty);
+      OrderRepository().updateTotal(orderId, total);
       isUpdate = false;
     });
   }
@@ -46,9 +47,9 @@ class _CartListState extends State<CartList> {
       onWillPop: () async {
         if (cartData.cart.isNotEmpty && isUpdate == true) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text(
-                "please wait untile update your cart",
+                "please wait untile update your cart . . .",
                 style: TextStyle(
                   color: Colors.black,
                 ),
@@ -61,112 +62,203 @@ class _CartListState extends State<CartList> {
         } else {
           Navigator.of(context).popUntil((route) => false);
           Navigator.of(context).pushNamed('/');
-          return true; // Allow default back button behavior
+          return true;
         }
       },
       child: Scaffold(
-        appBar: AppAppbar(context, 'Cart'),
-        // drawer: AppDrawer(title: 'Cart'),
-        body: ListView(
-          children: [
-            Expanded(
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: cartData.product.length,
-                separatorBuilder: (context, index) {
-                  return SizedBox(
-                    height: 8.0,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Image(
-                      image:
-                          MemoryImage(cartData.product[index].images![0].img!),
-                    ),
-                    title: Text(
-                      cartData.product[index].name ?? '',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+        appBar: const AppAppbar(title: 'Cart'),
+        drawer: AppDrawer(title: 'Cart'),
+        body: cartData.cart.isNotEmpty
+            ? Stack(
+                children: [
+                  ListView(
+                    children: [
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: cartData.product.length,
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(
+                            height: 8.0,
+                          );
+                        },
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: Image(
+                              image: MemoryImage(
+                                  cartData.product[index].images![0].img!),
+                            ),
+                            title: Text(
+                              cartData.product[index].name ?? '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              cartData.cart[index].price.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red[300],
+                              ),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.remove,
+                                    size: 13,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if ((cartData.cart[index].quantity ?? 0) >
+                                          0) {
+                                        cartData.cart[index].quantity =
+                                            (cartData.cart[index].quantity ??
+                                                    0) -
+                                                1;
+
+                                        cartData.editPrice(cartData.cart[index],
+                                            cartData.product[index].price ?? 0);
+                                        isUpdate = true;
+                                        cartData.updateTotal();
+                                        startTimer(
+                                            cartData.cart[index].id!,
+                                            cartData.cart[index].quantity!,
+                                            cartData.cart[index].order_id!,
+                                            cartData.total);
+                                      }
+                                    });
+                                  },
+                                ),
+                                Text(
+                                  cartData.cart[index].quantity.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.add,
+                                    size: 13,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      cartData.cart[index].quantity =
+                                          (cartData.cart[index].quantity ?? 0) +
+                                              1;
+
+                                      cartData.editPrice(cartData.cart[index],
+                                          cartData.product[index].price ?? 0);
+
+                                      cartData.updateTotal();
+
+                                      isUpdate = true;
+                                      startTimer(
+                                          cartData.cart[index].id!,
+                                          cartData.cart[index].quantity!,
+                                          cartData.cart[index].order_id!,
+                                          cartData.total);
+                                    });
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    final isDeleted = await CartRepository()
+                                        .deleteCart(cartData.cart[index].id!);
+                                    if (isDeleted == 1) {
+                                      cartData.deleteCart(index);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "item deleted succefully",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColorDark,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.green[20],
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    } else if (isDeleted == 0) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "ERROR: item didn\'t deleted !",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.redAccent,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                    subtitle: Text(
-                      cartData.product[index].price.toString(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red[300],
-                      ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.remove,
-                            size: 13,
+                    ],
+                  ),
+                  Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        margin: const EdgeInsets.all(20),
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Theme.of(context).primaryColorDark,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            minimumSize: Size(
+                              MediaQuery.of(context).size.width * 0.1,
+                              50,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              if ((cartData.cart[index].quantity ?? 0) > 0) {
-                                cartData.cart[index].quantity =
-                                    (cartData.cart[index].quantity ?? 0) - 1;
-                                isUpdate = true;
-                                startTimer(cartData.cart[index].id!,
-                                    cartData.cart[index].quantity!);
-                              }
-                            });
-                          },
-                        ),
-                        Text(
-                          cartData.cart[index].quantity.toString(),
-                          style: TextStyle(
-                            fontSize: 13,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.add,
-                            size: 13,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              cartData.cart[index].quantity =
-                                  (cartData.cart[index].quantity ?? 0) + 1;
-                              isUpdate = true;
-                              startTimer(cartData.cart[index].id!,
-                                  cartData.cart[index].quantity!);
-                            });
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.delete,
-                            color: Colors.red,
+                          child: Text(
+                            'Total: ${cartData.total} \$',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 17,
+                            ),
                           ),
                           onPressed: () async {
-                            final isDeleted = await cartRepo
-                                .deleteCart(cartData.cart[index].id!);
-                            if (isDeleted == 1) {
-                              cartData.deleteCart(index);
-                              cartData.deletePrroduct(index);
+                            //  Text('Purchase... '),
+
+                            final isOrderClosed = await OrderRepository()
+                                .purchaseOrder(cartData.cart[0].order_id!);
+                            if (isOrderClosed == 1) {
+                              cartData.resetObject();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(
-                                    "item deleted succefully",
+                                  content: const Text(
+                                    "Purchase Succefully",
                                     style: TextStyle(
                                       color: Colors.black,
                                     ),
                                   ),
                                   backgroundColor: Colors.green[20],
-                                  duration: Duration(seconds: 2),
+                                  duration: const Duration(seconds: 2),
                                 ),
                               );
-                            } else if (isDeleted == 0) {
+                            } else if (isOrderClosed == 0) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   content: Text(
-                                    "ERROR: item didn\'t deleted !",
+                                    "ERROR: Didn\'t Purchase!",
                                     style: TextStyle(
                                       color: Colors.black,
                                     ),
@@ -178,93 +270,38 @@ class _CartListState extends State<CartList> {
                             }
                           },
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            cartData.cart.length > 0
-                ? Container(
-                    margin: EdgeInsets.all(20),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(context).primaryColorDark,
-                        backgroundColor: Theme.of(context).primaryColor,
-                        minimumSize: Size(
-                          MediaQuery.of(context).size.width * 0.1,
-                          50,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                      )),
+                ],
+              )
+            : Center(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'You haven\'t any product in cart',
+                        style: TextStyle(
+                          fontSize: 20,
                         ),
                       ),
-                      child: Text('purchase'),
-                      onPressed: () async {
-                        final isOrderClosed = await orderRepo
-                            .purchaseOrder(cartData.cart[0].order_id!);
-                        if (isOrderClosed == 1) {
-                          cartData.resetObject();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Purchase Succefully",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
-                              backgroundColor: Colors.green[20],
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        } else if (isOrderClosed == 0) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "ERROR: Didn\'t Purchase!",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
-                              backgroundColor: Colors.redAccent,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  )
-                : Center(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'You haven\'t any product in cart',
-                            style: TextStyle(
-                              fontSize: 20,
-                            ),
+                      TextButton(
+                        child: const Text(
+                          'Go shopping now :)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
                           ),
-                          TextButton(
-                            child: Text(
-                              'Go shopping now :)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).popUntil((route) => false);
-                              Navigator.of(context).pushNamed('/');
-                            },
-                          ),
-                        ],
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).popUntil((route) => false);
+                          Navigator.of(context).pushNamed('/');
+                        },
                       ),
-                    ),
+                    ],
                   ),
-          ],
-        ),
+                ),
+              ),
       ),
     );
   }

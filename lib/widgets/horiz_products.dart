@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/image_model.dart';
+import 'image_preview_page.dart';
 
 Widget HorizProducts(List<Images> items) {
   return SizedBox(
@@ -18,9 +19,19 @@ Widget HorizProducts(List<Images> items) {
               decoration: BoxDecoration(
                 color: Colors.grey[500],
               ),
-              child: Image(
-                // image: AssetImage('assets/images/products/${items[index]}')),
-                image: MemoryImage(items[index + 1].img!),
+              child: GestureDetector(
+                child: Image(
+                  image: MemoryImage(items[index + 1].img!),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ImagePreviewPage(imageData: items[index + 1].img!),
+                    ),
+                  );
+                },
               ));
         },
       ),

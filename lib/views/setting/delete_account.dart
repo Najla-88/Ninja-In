@@ -12,14 +12,12 @@ class DeleteAcoount extends StatefulWidget {
 }
 
 class _DeleteAcoountState extends State<DeleteAcoount> {
-  final UserRepository userRepo = UserRepository();
   String text = 'Are you sure you want to deleet your account?';
   bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      // title: Icon(Icons.delete),
       content: Container(
         constraints: BoxConstraints(
           maxWidth: 300,
@@ -50,7 +48,7 @@ class _DeleteAcoountState extends State<DeleteAcoount> {
             setState(() {
               isLoading = true;
             });
-            var result = await userRepo.deleteeUser(widget.user);
+            var result = await UserRepository().deleteeUser(widget.user);
             if (result > 0) {
               Navigator.of(context).pop(result);
             }
@@ -58,13 +56,23 @@ class _DeleteAcoountState extends State<DeleteAcoount> {
               isLoading = false;
             });
           },
-          child: Text('Yes'),
+          child: Text(
+            'Yes',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
         ),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop(false);
             },
-            child: Text('No')),
+            child: Text(
+              'No',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+            )),
       ],
     );
   }

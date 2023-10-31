@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/user_data.dart';
 import 'horiz_products.dart';
+import 'image_preview_page.dart';
 
 class ProductView extends StatefulWidget {
   ProductView({super.key, required this.pic});
@@ -22,7 +23,6 @@ class _ProductViewState extends State<ProductView> {
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context);
     final cartData = Provider.of<CartData>(context);
-    final CartRepository cartRepo = CartRepository();
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -30,16 +30,26 @@ class _ProductViewState extends State<ProductView> {
             expandedHeight: MediaQuery.of(context).size.height * 0.75,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image(
-                // image: AssetImage(pic),
-                image: MemoryImage(widget.pic.images![0].img!),
+              background: GestureDetector(
+                child: Image(
+                  image: MemoryImage(widget.pic.images![0].img!),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ImagePreviewPage(
+                          imageData: widget.pic.images![0].img!),
+                    ),
+                  );
+                },
               ),
             ),
           ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -50,11 +60,11 @@ class _ProductViewState extends State<ProductView> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(
+                            child: SizedBox(
                               width: MediaQuery.of(context).size.width * 0.6,
                               child: Text(
                                 widget.pic.name!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -64,7 +74,7 @@ class _ProductViewState extends State<ProductView> {
                           isLoading
                               ? Visibility(
                                   visible: isLoading,
-                                  child: CircularProgressIndicator(),
+                                  child: const CircularProgressIndicator(),
                                 )
                               : TextButton(
                                   onPressed: () async {
@@ -72,18 +82,18 @@ class _ProductViewState extends State<ProductView> {
                                       setState(() {
                                         isLoading = true;
                                       });
-                                      final crt = await cartRepo.postCart(
-                                          userData.user.id!,
-                                          widget.pic.id!,
-                                          widget.pic.price!);
+                                      final crt = await CartRepository()
+                                          .postCart(
+                                              userData.user.id!,
+                                              widget.pic.id!,
+                                              widget.pic.price.toString());
                                       cartData.addCart(crt);
-
                                       setState(() {
                                         isLoading = false;
                                       });
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                           content: Text(
                                             "Product added to cart",
                                             style:
@@ -98,15 +108,15 @@ class _ProductViewState extends State<ProductView> {
                                       Navigator.of(context).pushNamed('/login');
                                     }
                                   },
-                                  child:
-                                      // Text('Add to cart'),
-                                      Icon(Icons.shopping_cart_outlined),
                                   style: TextButton.styleFrom(
                                     foregroundColor:
                                         Theme.of(context).primaryColorDark,
                                     backgroundColor:
                                         Theme.of(context).primaryColor,
                                   ),
+                                  child:
+                                      // Text('Add to cart'),
+                                      const Icon(Icons.shopping_cart_outlined),
                                 ),
                         ],
                       ),
@@ -114,7 +124,7 @@ class _ProductViewState extends State<ProductView> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           '${widget.pic.price!}\$',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.red),
@@ -126,7 +136,7 @@ class _ProductViewState extends State<ProductView> {
                           width: MediaQuery.of(context).size.width,
                           child: Text(
                             widget.pic.description!,
-                            style: TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                       ),

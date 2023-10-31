@@ -22,7 +22,6 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     final user = Users();
-    final UserRepository userRepo = UserRepository();
 
     return Scaffold(
       appBar: AppBar(
@@ -213,7 +212,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: isLoading
                       ? Visibility(
                           visible: isLoading,
-                          child: CircularProgressIndicator(),
+                          child: const CircularProgressIndicator(),
                         )
                       : TextButton(
                           style: TextButton.styleFrom(
@@ -235,8 +234,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               user.name = _nameCtrl.text;
                               user.email = _emailCtrl.text;
                               user.password = _passwordCtrl.text;
-                              Users apiUser = await userRepo.signup(user);
+                              Users apiUser =
+                                  await UserRepository().signup(user);
                               if (apiUser.name != null) {
+                                // ignore: use_build_context_synchronously
                                 Navigator.pushReplacementNamed(
                                   context,
                                   '/login',
@@ -247,7 +248,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text(
                                         "User name or email is already exist"),
                                     backgroundColor: Colors.redAccent,
@@ -260,7 +261,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               });
                             }
                           },
-                          child: Text('Submit'),
+                          child: const Text('Submit'),
                         ),
                 ),
               ],

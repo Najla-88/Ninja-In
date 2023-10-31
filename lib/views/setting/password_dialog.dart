@@ -20,7 +20,7 @@ class _PasswordDialogState extends State<PasswordDialog> {
     final userData = Provider.of<UserData>(context);
 
     return AlertDialog(
-      title: Text('Enter the new password'),
+      title: const Text('Enter the new password'),
       insetPadding: const EdgeInsets.all(10),
       content: SizedBox(
         width: MediaQuery.of(context).size.width,

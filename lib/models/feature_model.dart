@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-class Features {
-  Features({
+class Feature {
+  Feature({
     this.id,
     this.name,
     this.image,
     this.cateId,
   });
 
-  Features.fromJson(dynamic json) {
+  Feature.fromJson(dynamic json) {
     id = int.parse(json['id']);
     name = json['name'];
     if (json['image'] != null) {
@@ -22,13 +22,13 @@ class Features {
   Uint8List? image;
   int? cateId;
 
-  Features copyWith({
+  Feature copyWith({
     int? id,
     String? name,
     Uint8List? img,
     int? cateId,
   }) =>
-      Features(
+      Feature(
         id: id ?? this.id,
         name: name ?? this.name,
         image: image ?? this.image,

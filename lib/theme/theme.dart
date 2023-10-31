@@ -4,7 +4,6 @@ final lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: Colors.black,
   primaryColorDark: Colors.white,
-
   appBarTheme: const AppBarTheme(
     iconTheme: IconThemeData(
       color: Colors.black,
@@ -25,13 +24,6 @@ final lightTheme = ThemeData(
     textColor: Colors.grey[600],
     selectedColor: Colors.black,
   ),
-
-  // I didnt understand this
-  // textButtonTheme: TextButtonThemeData(
-  //   style: ButtonStyle(
-  //     foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-  //   ),
-  // ),
 );
 
 final darkTheme = ThemeData(

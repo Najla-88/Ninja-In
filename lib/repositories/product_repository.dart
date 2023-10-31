@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:ninjain/models/product_model.dart';
-
 import 'image_repository.dart';
 
 class ProductRepository {
@@ -10,8 +9,6 @@ class ProductRepository {
     dio.options.connectTimeout = const Duration(seconds: 10);
     dio.options.responseType = ResponseType.json;
   }
-
-  final ImagesRepository imgRepo = ImagesRepository();
 
   static const String _baseUrl =
       'http://192.168.221.110:8080/ninjaIn/products.php';
@@ -26,7 +23,7 @@ class ProductRepository {
         if (data.isNotEmpty) {
           for (var item in data) {
             final prod = Product.fromJson(item);
-            prod.images = await imgRepo.getImagesByProd(prod.id!);
+            prod.images = await ImagesRepository().getImagesByProd(prod.id!);
             prods.add(prod);
           }
         }
@@ -47,7 +44,7 @@ class ProductRepository {
         if (data.isNotEmpty) {
           for (var item in data) {
             final prod = Product.fromJson(item);
-            prod.images = await imgRepo.getImagesByProd(prod.id!);
+            prod.images = await ImagesRepository().getImagesByProd(prod.id!);
             prods.add(prod);
           }
         }
@@ -67,11 +64,56 @@ class ProductRepository {
         var data = response.data;
         if (data.isNotEmpty) {
           var prod = Product.fromJson(data);
-          prod.images = await imgRepo.getImagesByProd(prod.id!);
+          prod.images = await ImagesRepository().getImagesByProd(prod.id!);
           return prod;
         }
       }
       return Product();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<Product>> getProdByName(String prodName) async {
+    try {
+      if (prodName != "") {
+        var response = await dio
+            .get('$_baseUrl/getByName', queryParameters: {'name': prodName});
+        List<Product> prods = [];
+        if (response.statusCode == 200) {
+          var data = response.data as List;
+          if (data.isNotEmpty) {
+            for (var item in data) {
+              final prod = Product.fromJson(item);
+              prod.images = await ImagesRepository().getImagesByProd(prod.id!);
+              prods.add(prod);
+            }
+          }
+        }
+        return prods;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<String>> fetchSuggestionsFromAPI(String prodName) async {
+    try {
+      var response = await dio
+          .get('$_baseUrl/getSuggestions', queryParameters: {'name': prodName});
+      List<String> suggestions = [];
+      if (response.statusCode == 200) {
+        var data = response.data as List;
+        if (data.isNotEmpty) {
+          for (var item in data) {
+            final sug = item['name'] as String;
+            suggestions.add(sug);
+          }
+        }
+      }
+      return suggestions;
     } catch (e) {
       rethrow;
     }

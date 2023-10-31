@@ -48,6 +48,7 @@ class _AppDrawerState extends State<AppDrawer> {
             [Text('Shop'), Icon(Icons.shopify), '/'],
           ];
     Uint8List? userpicData = userData.user.img;
+
     return Drawer(
       child: ListView(
         children: [
@@ -72,7 +73,8 @@ class _AppDrawerState extends State<AppDrawer> {
                         backgroundImage:
                             userpicData != null && userpicData.isNotEmpty
                                 ? MemoryImage(userpicData)
-                                : AssetImage('assets/images/product_image.png')
+                                : const AssetImage(
+                                        'assets/images/product_image.png')
                                     as ImageProvider<Object>?,
                       ),
                       Padding(
@@ -90,7 +92,6 @@ class _AppDrawerState extends State<AppDrawer> {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10.0,
-                          // vertical: 5.0,
                         ),
                         child: Text(
                           userData.user.email!,

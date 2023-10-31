@@ -22,4 +22,18 @@ class OrderRepository {
       rethrow;
     }
   }
+
+  Future<int> updateTotal(int orderId, double total) async {
+    try {
+      var response = await dio
+          .post('$_baseUrl/updateTotal', data: {'id': orderId, 'total': total});
+      if (response.statusCode == 200) {
+        var data = response.data;
+        return data;
+      }
+      return 0;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

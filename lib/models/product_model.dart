@@ -14,14 +14,14 @@ class Product {
     id = int.parse(json['id']);
     name = json['name'];
     description = json['description'];
-    price = json['price'].toString();
+    price = double.parse(json['price']);
     cateId = int.parse(json['cate_id']);
     images = json['img'] != null ? [json['img']] : null;
   }
   int? id;
   String? name;
   String? description;
-  String? price;
+  double? price;
   int? cateId;
   List<Images>? images;
 
@@ -29,7 +29,7 @@ class Product {
     int? id,
     String? name,
     String? description,
-    String? price,
+    double? price,
     int? cateId,
     List<Images>? images,
   }) =>
@@ -46,7 +46,7 @@ class Product {
     map['id'] = id;
     map['name'] = name;
     map['description'] = description;
-    map['price'] = double.parse(price ?? '');
+    map['price'] = price;
     map['cate_id'] = cateId;
     map['img'] = images;
     return map;
